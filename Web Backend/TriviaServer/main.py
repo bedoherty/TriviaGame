@@ -15,11 +15,55 @@
 # limitations under the License.
 #
 import webapp2
+from ndbmodels import *
+from google.appengine.ext import ndb
+from google.appengine.api import users
+import jinja2
+import os
+import urllib
+
+JINJA_ENVIRONMENT = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
+    extensions=['jinja2.ext.autoescape'],
+    autoescape=True)
 
 class MainHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.write('Hello world!')
+	def get(self):
+		currUser = users.get_current_user()
+		if currUser == None:
+			self.redirect(users.create_login_url(self.request.uri))
+		else:
+			result = Owner.query(Owner.userId == currUser.user_id()).get()
+			if result == None:
+				self.response.write('Average Joe!')
+				newOwner = Owner(userId=currUser.user_id())
+				newOwner.put()
+			else:
+				template_values = {
+					'name': currUser.nickname(),
+				}
+				template = JINJA_ENVIRONMENT.get_template('index_template.html')
+				self.response.write(template.render(template_values))
+
+class UsersPageHandler(webapp2.RequestHandler):
+	def get(self):
+		currUser = users.get_current_user()
+		if currUser == None:
+			self.redirect(users.create_login_url(self.request.uri))
+		else:
+			result = Owner.query(Owner.userId == currUser.user_id()).get()
+			if result == None:
+				self.response.write('Average Joe!')
+				newOwner = Owner(userId=currUser.user_id())
+				newOwner.put()
+			else:
+				template_values = {
+					'name': currUser.nickname(),
+					'owners': Owner.query().fetch(10),
+				}
+				template = JINJA_ENVIRONMENT.get_template('users_template.html')
+				self.response.write(template.render(template_values))
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler), ('/users', UsersPageHandler)
 ], debug=True)
