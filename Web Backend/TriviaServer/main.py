@@ -33,11 +33,11 @@ class MainHandler(webapp2.RequestHandler):
 		if currUser == None:
 			self.redirect(users.create_login_url(self.request.uri))
 		else:
-			result = Owner.query(Owner.userId == currUser.user_id()).get()
+			result = UserProperty.query(UserProperty.userId == currUser.user_id()).get()
 			if result == None:
 				self.response.write('Average Joe!')
-				newOwner = Owner(userId=currUser.user_id())
-				newOwner.put()
+				userProp = UserProperty(userId=currUser.user_id(), userName=currUser.nickname(), userStatus="Owner")
+				userProp.put()
 			else:
 				template_values = {
 					'name': currUser.nickname(),
@@ -51,19 +51,31 @@ class UsersPageHandler(webapp2.RequestHandler):
 		if currUser == None:
 			self.redirect(users.create_login_url(self.request.uri))
 		else:
-			result = Owner.query(Owner.userId == currUser.user_id()).get()
+			result = UserProperty.query(UserProperty.userId == currUser.user_id()).get()
 			if result == None:
 				self.response.write('Average Joe!')
-				newOwner = Owner(userId=currUser.user_id())
-				newOwner.put()
+				userProp = UserProperty(userId=currUser.user_id(), userName=currUser.nickname(), userStatus="Owner")
+				userProp.put()
 			else:
 				template_values = {
 					'name': currUser.nickname(),
-					'owners': Owner.query().fetch(10),
+					'owners': UserProperty.query(UserProperty.userStatus == "Owner").fetch(10),
+					'admins': UserProperty.query(UserProperty.userStatus == "Admin").fetch(10),
+					'requests': AccessRequest.query().fetch(10),
 				}
 				template = JINJA_ENVIRONMENT.get_template('users_template.html')
 				self.response.write(template.render(template_values))
 
+class RequestSubmitHandler(webapp2.RequestHandler):
+	def get(self):
+		currUser = users.get_current_user()
+		if currUser == None:
+			self.redirect(users.create_login_url(self.request.uri))
+		else:
+			newRequest = AccessRequest(userName = currUser.nickname(), userId = currUser.user_id(), requestedAccess = "Admin", requestReason = "Cause reasons.")
+			newRequest.put()
+			self.response.write('Submitted Request')
+
 app = webapp2.WSGIApplication([
-    ('/', MainHandler), ('/users', UsersPageHandler)
+    ('/', MainHandler), ('/users', UsersPageHandler), ('/newrequest', RequestSubmitHandler)
 ], debug=True)

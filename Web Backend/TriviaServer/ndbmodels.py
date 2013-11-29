@@ -18,15 +18,19 @@ from google.appengine.ext import ndb
 #
 #class Question(ndb.Model):
 
+#
+#	User Properties Class
+#
+class UserProperty(ndb.Model):
+	userName = ndb.StringProperty()
+	userId = ndb.StringProperty()
+	userStatus = ndb.StringProperty()
 
 #
-#	Owners Class
+#	User Access Request Class
 #
-class Owner(ndb.Model):
+class AccessRequest(ndb.Model):
+	userName = ndb.StringProperty()
 	userId = ndb.StringProperty()
-
-#
-#	Admin Class
-#
-class Admin(ndb.Model):
-	userId = ndb.StringProperty()
+	requestedAccess = ndb.StringProperty()
+	requestReason = ndb.StringProperty()

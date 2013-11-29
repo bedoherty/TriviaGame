@@ -1,0 +1,141 @@
+<!doctype html>
+{% autoescape true %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A layout example that shows off a responsive product landing page.">
+
+    <title>TriviaServer Users</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css">
+<link rel="stylesheet" href="http://purecss.io/combo/1.7.8?/css/layouts/marketing.css">
+<script src="http://use.typekit.net/gis6vng.js"></script>
+<script>
+    try { Typekit.load(); } catch (e) {}
+</script>
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-41480445-1', 'purecss.io');
+ga('send', 'pageview');
+</script>
+
+
+</head>
+<body>
+
+<div class="content">
+    <div class="header">
+        <div class="pure-menu pure-menu-open pure-menu-fixed pure-menu-horizontal">
+            <a class="pure-menu-heading" href="">{{ name }}</a>
+
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/">Questions</a></li>
+                <li class="pure-menu-selected"><a href="/users">Users</a></li>
+                <li><a href="/">Settings</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="splash">
+        <div class="pure-g-r">
+            <div class="pure-u-1-3">
+            </div>
+            <div class="pure-u-2-3">
+                <div class="1-box splash-text">
+                    <h1 class="splash-head">
+                        Registered Users
+                    </h1>
+                    <br />
+                    <table class="pure-table">
+                <thead>
+                    <tr>
+                        <th>User Name</th>
+                        <th>User Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for person in owners %}
+                        <tr>
+                            <td>{{ person['userName'] }}</td>
+                            <td>Owner</td>
+                        </tr>
+                    {% endfor %}
+                    {% for person in admins %}
+                        <tr>
+                            <td>{{ person['userName'] }}</td>
+                            <td>Admin</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="content">
+
+        <div class="pure-g-r">
+            <div class="pure-u-1-3">
+            </div>
+            <div class="pure-u-2-3">
+                <div class="1-box splash-text">
+                    <h1 class="splash-head">
+                        Access Requests
+                    </h1>
+                    <table class="pure-table">
+                <thead>
+                    <tr>
+                        <th>User Name</th>
+                        <th>Requested Status</th>
+                        <th>Request Reason</th>
+                        <th>Request Response</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in requests %}
+                        <tr>
+                            <td>{{ request['userName'] }}</td>
+                            <td>{{ request['requestedAccess'] }}</td>
+                            <td>{{ request['requestReason'] }}</td>
+                            <td><button class="pure-button pure-button-success">Approve</button><button class="pure-button pure-button-error">Decline</button></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        TriviaServer by Brian Doherty
+    </div>
+</div>
+
+<script src="http://yui.yahooapis.com/3.12.0/build/yui/yui-min.js"></script>
+<script>
+YUI().use('node-base', 'node-event-delegate', function (Y) {
+    // This just makes sure that the href="#" attached to the <a> elements
+    // don't scroll you back up the page.
+    Y.one('body').delegate('click', function (e) {
+        e.preventDefault();
+    }, 'a[href="#"]');
+});
+</script>
+
+
+
+
+
+</body>
+</html>
+{% endautoescape %}
