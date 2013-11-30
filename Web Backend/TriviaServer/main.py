@@ -76,6 +76,38 @@ class RequestSubmitHandler(webapp2.RequestHandler):
 			newRequest.put()
 			self.response.write('Submitted Request')
 
+#
+#	AJAX this page with the following params:
+#	requestId			- Id of the user making the request	
+#	requestName 		- Name of the user making the request
+#	requestedStatus		- Status being requested
+#	decision 			- Decision that was made, Y or N
+#
+class RequestDecisionHandler(webapp2.RequestHandler):
+	def post(self):
+		currUser = users.get_current_user()
+		if currUser == None:
+			self.response.write('-1')
+		else:
+			result = UserProperty.query(UserProperty.userId == currUser.user_id()).get()
+			if result == None:
+				self.response.write('-1')
+			else:
+				requestId = self.request.POST['requestId']
+				requestName = self.request.POST['requestName']
+				requestedStatus = self.request.POST['requestedStatus']
+				decision = self.request.POST['decision']
+				if decision == "Y":
+					newUser = UserProperty(userId=requestId, userName=requestName, userStatus=requestedStatus)
+					newUser.put()
+					currRequest = AccessRequest.query(AccessRequest.userId == requestId).get()
+					currRequest.key.delete()
+					self.response.write('1')
+				else:
+					currRequest = AccessRequest.query(AccessRequest.userId == requestId).get()
+					currRequest.key.delete()
+					self.response.write('0')
+
 app = webapp2.WSGIApplication([
-    ('/', MainHandler), ('/users', UsersPageHandler), ('/newrequest', RequestSubmitHandler)
+    ('/', MainHandler), ('/users', UsersPageHandler), ('/newrequest', RequestSubmitHandler), ('/requestdecision', RequestDecisionHandler)
 ], debug=True)
